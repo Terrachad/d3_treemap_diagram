@@ -78,7 +78,7 @@ const drawTheTreeMap = () =>{
 
         tile.exit().remove();
 
-
+ 
 };
 
 
