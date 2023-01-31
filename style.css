@@ -48,3 +48,7 @@ body{
     border: 2px solid #fff;
     border-radius: 50%
 }
+
+.buttons:nth-child(){
+    display: grid;
+}
