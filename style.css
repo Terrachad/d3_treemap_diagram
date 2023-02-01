@@ -4,15 +4,20 @@ html{
 
 body{
     display: flex;
-    flex-direction: column;
+    flex-direction:column;
     justify-content: center;
     align-items: center;
+    place-content: center;
     min-height: 100%;
-
-    font-family: 'Arial';
+    font: 10px sans-serif;
 }
 
-
+.tile-text {
+    font-size: 10;
+    margin: 5%;
+    white-space: pre-line;
+    word-break:keep-all;
+}
 
 
 

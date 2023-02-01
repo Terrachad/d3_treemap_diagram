@@ -55,14 +55,22 @@ const drawTheTreeMap = () =>{
       (node1,node2)=>{return node2['value'] - node1['value']}
     )
 
-    d3
+    let createTreeMap = d3
     .treemap()
-    .size([width,height])
-    (hierarchy)
+    .size([1200,570])
 
+    createTreeMap(hierarchy);
     tilesFromData = hierarchy.leaves()
-    console.log(tilesFromData)
+    //console.log(tilesFromData)
 
+    let categories = tilesFromData.map(function(nodes){
+      return nodes.data.category
+    })
+    let uniqueCategories = [...new Set(categories)]
+    console.log({uniqueCategories})
+
+
+    /*
     tile = svg
                 .selectAll('g')
                 .data(tilesFromData)
@@ -70,15 +78,66 @@ const drawTheTreeMap = () =>{
                 .append('g')
                 .attr('transform',(dataitem) => {return `translate(${dataitem['x0']},${dataitem['y0']})`})
 
+
+        let bw,bh;
         tile
         .append('rect')
         .attr('class','tile')
+        .attr('stroke','white')
         .attr('width', (dataitem) => {return dataitem['x1'] - dataitem['x0']})
         .attr('height',(dataitem) => {return dataitem['y1'] - dataitem['y0']})
+        .attr('fill',(dataitem)=>{
+          for(let i= 0; i < uniqueCategories.length; i++ ){
+            //console.log(uniqueCategories[i])
+            console.log(dataitem.data.category)
+            if(uniqueCategories[i] === dataitem.data.category){
+              return colors[i]
+            }
+          }
+        })
+        .attr('data-name',(dataitem)=>{return dataitem.data.name})
+        .attr('data-category',(dataitem)=>{return dataitem.data.category})
+        .attr('data-value',(dataitem)=>{return dataitem.data.value})
+        */
+        
+        
+        /*        tile.append('text')
+            .attr('class','tile-text')
+            .selectAll('tspan')
+            .data(function (dataitem) {
+              return dataitem.data.name.split(/(?=[A-Z][^A-Z])/g);
+            })
+            .enter()
+            .append('tspan')
+            .attr('x',5)
+            .attr('y',(d,i)=>{return 13 + i * 10})
+            .text(function (dataitem){
+              return dataitem
+            })
+        */
 
-        tile.exit().remove();
+            let blockwidth;    
+            let blockheight;    
+            /*
+            tile
+            .append('g')
+            .html(function(dataitem){console.log(dataitem);
+            return `    
+            <foreignobject x="0" y="0" width="${(dataitem['x1'] - dataitem['x0'])}" height="${dataitem['y1'] - dataitem['y0']}">
+            <body xmlns="http://www.w3.org/1999/xhtml">
+            <div class="tile-text">${dataitem.data.name}</div>
+            </body>
+            </foreignobject>`
+            })
+            */
+            svg.append('g')
+                .attr('id','legend')
 
- 
+            svg.select('#legend')
+              .attr('transform',`translate(${height/2},${width/2})`)
+                .append('text')
+                .text(uniqueCategories)
+
 };
 
 
@@ -102,5 +161,5 @@ const fetchTheMovies = () =>{ fetchTheData (movies)}
 const fetchTheKick = () =>{ fetchTheData (kickstarter)}
 const fetchTheGames = () =>{ fetchTheData (videogames)}
 
-fetchTheMovies();
+fetchTheData(kickstarter);
 
