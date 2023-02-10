@@ -40,7 +40,6 @@ d3.select('body').append('svg').attr('id','canvas').attr('width', width).attr('h
 const svg = d3.select('svg')
 
 const drawTheTreeMap = () =>{
-    console.log(dataObj)
     hierarchy = d3
     .hierarchy(dataObj,
       (node) => {
@@ -61,25 +60,20 @@ const drawTheTreeMap = () =>{
 
     createTreeMap(hierarchy);
     tilesFromData = hierarchy.leaves()
-    //console.log(tilesFromData)
 
     let categories = tilesFromData.map(function(nodes){
       return nodes.data.category
     })
     let uniqueCategories = [...new Set(categories)]
-    console.log({uniqueCategories})
-
-
-    /*
-    tile = svg
+        
+        tile = svg
                 .selectAll('g')
                 .data(tilesFromData)
                 .enter()
                 .append('g')
                 .attr('transform',(dataitem) => {return `translate(${dataitem['x0']},${dataitem['y0']})`})
 
-
-        let bw,bh;
+        const tooltip = d3.select('#tooltip')
         tile
         .append('rect')
         .attr('class','tile')
@@ -88,8 +82,6 @@ const drawTheTreeMap = () =>{
         .attr('height',(dataitem) => {return dataitem['y1'] - dataitem['y0']})
         .attr('fill',(dataitem)=>{
           for(let i= 0; i < uniqueCategories.length; i++ ){
-            //console.log(uniqueCategories[i])
-            console.log(dataitem.data.category)
             if(uniqueCategories[i] === dataitem.data.category){
               return colors[i]
             }
@@ -98,30 +90,29 @@ const drawTheTreeMap = () =>{
         .attr('data-name',(dataitem)=>{return dataitem.data.name})
         .attr('data-category',(dataitem)=>{return dataitem.data.category})
         .attr('data-value',(dataitem)=>{return dataitem.data.value})
-        */
-        
-        
-        /*        tile.append('text')
-            .attr('class','tile-text')
-            .selectAll('tspan')
-            .data(function (dataitem) {
-              return dataitem.data.name.split(/(?=[A-Z][^A-Z])/g);
-            })
-            .enter()
-            .append('tspan')
-            .attr('x',5)
-            .attr('y',(d,i)=>{return 13 + i * 10})
-            .text(function (dataitem){
-              return dataitem
-            })
-        */
 
-            let blockwidth;    
-            let blockheight;    
-            /*
+        tile
+        .on('mousemove',(event,hoveredItem,index) => {
+           tooltip
+           .html(`Name: ${hoveredItem.data.name} <br> Category: ${hoveredItem.data.category}<br> Value: ${hoveredItem.data.value}`)
+           .attr("data-value", hoveredItem.data.value)
+           .style('left',(event.pageX) + "px")
+           .style('top',(event.pageY) + "px")
+           .style('color','black')
+           .transition()
+           .style('opacity','1')
+           .attr('id','tooltip')
+           
+       })
+       .on('mouseout', (event,hoveredItem,index)=>{
+           tooltip
+           .transition()
+           .style('opacity','0')
+       })
+
             tile
             .append('g')
-            .html(function(dataitem){console.log(dataitem);
+            .html(function(dataitem){
             return `    
             <foreignobject x="0" y="0" width="${(dataitem['x1'] - dataitem['x0'])}" height="${dataitem['y1'] - dataitem['y0']}">
             <body xmlns="http://www.w3.org/1999/xhtml">
@@ -129,15 +120,42 @@ const drawTheTreeMap = () =>{
             </body>
             </foreignobject>`
             })
-            */
+            
             svg.append('g')
                 .attr('id','legend')
+                
 
-            svg.select('#legend')
-              .attr('transform',`translate(${height/2},${width/2})`)
-                .append('text')
-                .text(uniqueCategories)
+            let legend =svg.selectAll('#legend')
+                          .attr('transform',`translate(${height/2},${width/2})`)
 
+            let rectsize = 15;
+            let elementsPerRow = 5;
+            legend
+            .selectAll('#legend')
+            .data(uniqueCategories)
+            .enter()
+            .append('g')
+            .attr('class','legend-group')
+            .append('rect')
+            .attr('class','legend-item')
+            .attr('width',rectsize)
+            .attr('height',rectsize)
+            .attr('y', (d,i) => {return (i) % elementsPerRow * 20 - 10})
+            .attr('x', (d,i) => {return -rectsize - 10 + Math.floor(i/elementsPerRow) * rectsize + 100 *Math.floor(i/elementsPerRow)})
+            .attr('fill',(category) =>{
+              for(let i= 0; i < uniqueCategories.length; i++ ){
+                if(uniqueCategories[i] === category){
+                  return colors[i]
+                }
+              }
+            })
+
+            svg
+            .selectAll('.legend-group')
+            .append('text')
+            .attr('x', (d,i) => {return  Math.floor(i/elementsPerRow) * rectsize + 100 *Math.floor(i/elementsPerRow); console.log((i / elementsPerRow) * 20, i)})
+            .attr('y', (d,i) => {return (i) % elementsPerRow * 20})
+            .text((category) => {return category})
 };
 
 
